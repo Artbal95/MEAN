@@ -9,68 +9,97 @@ const HttpErrorHandler = require('../utils/errorHandler')
 const User = require('../models/User')
 
 module.exports.login = async (req, res) => {
-    // Get Body, Email and Password
-    const {email, password} = req.body
 
-    // Check Is There Any Candidate
-    const candidate = await User.findOne({email})
+    try {
 
-    if (candidate) {
-        // Check If Yes, Check The Password
-        const passResult = bcrypt.compareSync(password, candidate.password)
+        // Get Body, Email and Password
+        const {email, password} = req.body
 
-        if (passResult) {
-            // If Password Right, Create Token
-            const token = jwt.sign({
-                email: candidate.email,
-                userId: candidate._id
-            }, keys.jwt, {expiresIn: 60 * 60})
+        // Check Is There Any Candidate
+        const candidate = await User.findOne({email})
 
-            res.status(200).json({token})
+        if (candidate) {
+            // Check If Yes, Check The Password
+            const passResult = bcrypt.compareSync(password, candidate.password)
+
+            if (passResult) {
+
+                // If Password Right, Create Token
+                const token = jwt.sign(
+                    {
+                        email: candidate.email,
+                        userId: candidate._id
+                    },
+                    keys.jwt,
+                    {expiresIn: 60 * 60})
+
+                res.status(200).json({token})
+
+            } else {
+
+                // If Password Wrong, Return Some Error Password
+                res.status(401).json({
+                    message: 'Password Is Wrong. Please Try Again.'
+                })
+
+            }
+
         } else {
-            // If Password Wrong, Return Some Error Password
-            res.status(401).json({
-                message: 'Password Is Wrong. Please Try Again.'
+
+            // Check If No Candidate, Return Some Error Email
+            res.status(404).json({
+                message: 'Candidate with this email was not found'
             })
+
         }
 
-    } else {
-        // Check If No Candidate, Return Some Error Email
-        res.status(404).json({
-            message: 'Candidate with this email was not found'
-        })
+    } catch (e) {
+
+        // If There Are Any Error With Server
+        HttpErrorHandler(res, e)
+
     }
+
 }
 
 module.exports.register = async (req, res) => {
-    // Get Body, Email and Password
-    const {email, password} = req.body
 
-    // Check Is There Any Candidate
-    const candidate = await User.findOne({email})
+    try {
 
-    if (candidate) {
-        // Check If Yes, return Error Already Exist
+        // Get Body, Email and Password
+        const {email, password} = req.body
 
-        res.status(409).json({
-            message: 'This Email Is Already Exist'
-        })
+        // Check Is There Any Candidate
+        const candidate = await User.findOne({email})
 
-    } else {
-        // Check If No, Create New User with Hash Password
-        const salt = bcrypt.genSaltSync(10)
-        const passHash = bcrypt.hashSync(password, salt)
-        const user = new User({
-            email,
-            password: passHash
-        })
-        try {
-            // Save The New User In DataBase
-            await user.save()
+        if (candidate) {
+
+            // Check If Yes, return Error Already Exist
+            res.status(409).json({
+                message: 'This Email Is Already Exist'
+            })
+
+        } else {
+
+            // Check If No, Create New User with Hash Password
+            const salt = bcrypt.genSaltSync(10)
+            const passHash = bcrypt.hashSync(password, salt)
+
+            // Create New User
+            const user = await new User({
+                email,
+                password: passHash
+            }).save()
+
             res.status(201).json(user)
-        } catch (e) {
-            // If There are Any Issues with connections
-            HttpErrorHandler(res, e)
+
         }
+
+    } catch (e) {
+
+        // If There Are Any Error With Server
+        HttpErrorHandler(res, e)
+
     }
+
 }

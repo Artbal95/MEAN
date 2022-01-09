@@ -1,6 +1,12 @@
 const {Router} = require('express')
-const positionControllers = require('../controllers/position')
+
+// initialization Router
 const router = Router()
+
+// Get Controllers For Router
+const positionControllers = require('../controllers/position')
+
+// Todo Create Routers For Position
 
 // localhost:5000/api/position/:categoryId
 router.get('/:categoryId', positionControllers.getByCategoryId)
