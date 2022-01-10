@@ -4,7 +4,7 @@
   (ngSubmit)="onSubmit()"
 >
   <div class="card-content">
-    <span class="card-title">Войти в систему</span>
+    <span class="card-title">Sign in</span>
     <div class="input-field">
       <input
         id="email"
@@ -23,10 +23,10 @@
         *ngIf="form.get('email')?.invalid && form.get('email')?.touched"
       >
         <span *ngIf="form.get('email')?.hasError('required')">
-          Email should not be empty
+          Please enter a email address
         </span>
         <span *ngIf="form.get('email')?.hasError('email')">
-          Email is Wrong
+          Invalid email address. Valid e-mail can contain only latin letters, numbers, '@' and '.'
         </span>
       </span>
     </div>
@@ -42,7 +42,7 @@
         for="password"
         class="{{form.get('password')?.value ? 'active' : ''}}"
       >
-        Пароль:
+        Password:
       </label>
       <span
         class="helper-text red-text"
@@ -51,15 +51,15 @@
         <span
           *ngIf="form.get('password')?.hasError('required')"
         >
-          Password should not be empty
+          Passwords must contain at least 6 characters,
+          including uppercase, lowercase letters and numbers.
         </span>
         <span
           *ngIf="form.get('password')?.hasError('minlength')"
         >
-          Password Must Be
-          {{ form.get('password')?.errors?.['minlength'].requiredLength }} Characters.
-          But Get
-          {{ form.get('password')?.errors?.['minlength'].actualLength }}
+          Current {{ form.get('password')?.errors?.['minlength'].actualLength }} Character,
+          password must contain at least {{ form.get('password')?.errors?.['minlength'].requiredLength }} characters,
+          including uppercase, lowercase letters and numbers.
         </span>
       </span>
     </div>
@@ -70,7 +70,7 @@
       class="modal-action btn waves-effect"
       [disabled]="form.invalid || form.disabled"
     >
-      Войти
+      Connect
     </button>
   </div>
 </form>

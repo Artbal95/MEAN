@@ -4,6 +4,7 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 
 import {AuthService} from "../shared/services/auth.service";
 import {Subscription} from "rxjs";
+import {MaterialService} from "../shared/classes/material.service";
 
 @Component({
   selector: 'app-login-page',
@@ -18,27 +19,27 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   constructor(
     private auth: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {
   }
 
   ngOnInit(): void {
     this.form = new FormGroup({
       email: new FormControl(
-        'test@test.ru',
+        null,
         [Validators.required, Validators.email]
       ),
       password: new FormControl(
-        'test123',
+        null,
         [Validators.required, Validators.minLength(6)]
       )
     })
 
     this.route.queryParams.subscribe((params: Params) => {
       if(params['registered']){
-
+        MaterialService.toast('Now you can log in using your data')
       }else if(params['accessDenied']){
-
+        MaterialService.toast('To get started, log in to the system')
       }
     })
   }
@@ -55,7 +56,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     this.aSub = this.auth.login(this.form.value).subscribe(
       () => console.log('Navigate To Overview'),
       (error: any): void => {
-        console.warn(error.error.message)
+        MaterialService.toast(error.error.message)
         this.form.enable()
       },
     )

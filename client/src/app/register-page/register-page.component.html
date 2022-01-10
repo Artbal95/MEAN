@@ -1,16 +1,77 @@
-<div class="card">
+<form
+  class="card"
+  [formGroup]="form"
+  (ngSubmit)="onSubmit()"
+>
   <div class="card-content">
-    <span class="card-title">Создать аккаунт</span>
+    <span class="card-title">Create Account</span>
     <div class="input-field">
-      <input id="email" type="email" required>
-      <label for="email">Email:</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        [ngClass]="{'invalid': form.get('email')?.invalid && form.get('email')?.touched}"
+      >
+      <label
+        for="email"
+        class="{{form.get('email')?.value ? 'active' : ''}}"
+      >
+        Email:
+      </label>
+      <span
+        class="helper-text red-text"
+        *ngIf="form.get('email')?.invalid && form.get('email')?.touched"
+      >
+        <span *ngIf="form.get('email')?.hasError('required')">
+          Please enter a email address
+        </span>
+        <span *ngIf="form.get('email')?.hasError('email')">
+          Invalid email address. Valid e-mail can contain only latin letters, numbers, '@' and '.'
+        </span>
+      </span>
     </div>
     <div class="input-field">
-      <input id="password" type="password" required>
-      <label for="password">Пароль:</label>
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        value="test123"
+        [ngClass]="{'invalid': form.get('password')?.invalid && form.get('password')?.touched}"
+      >
+      <label
+        for="password"
+        class="{{form.get('password')?.value ? 'active' : ''}}"
+      >
+        Password:
+      </label>
+      <span
+        class="helper-text red-text"
+        *ngIf="form.get('password')?.invalid && form.get('password')?.touched"
+      >
+        <span
+          *ngIf="form.get('password')?.hasError('required')"
+        >
+          Passwords must contain at least 6 characters,
+          including uppercase, lowercase letters and numbers.
+        </span>
+        <span
+          *ngIf="form.get('password')?.hasError('minlength')"
+        >
+          Current {{ form.get('password')?.errors?.['minlength'].actualLength }} Character,
+          password must contain at least {{ form.get('password')?.errors?.['minlength'].requiredLength }} characters,
+          including uppercase, lowercase letters and numbers.
+        </span>
+      </span>
     </div>
   </div>
   <div class="card-action">
-    <button class="modal-action btn waves-effect">Создать</button>
+    <button
+      type="submit"
+      class="modal-action btn waves-effect"
+      [disabled]="form.invalid || form.disabled"
+    >
+      Register
+    </button>
   </div>
-</div>
+</form>
+
