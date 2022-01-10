@@ -1,6 +1,12 @@
 const {Router} = require('express')
-const analyticsControllers = require('../controllers/analytics')
+
+// initialization Router
 const router = Router()
+
+// Get Controllers For Router
+const analyticsControllers = require('../controllers/analytics')
+
+// Todo Create Routers For Analytics
 
 // localhost:5000/api/analytics/overview
 router.get('/overview', analyticsControllers.overview)

@@ -1,0 +1,76 @@
+<form
+  class="card"
+  [formGroup]="form"
+  (ngSubmit)="onSubmit()"
+>
+  <div class="card-content">
+    <span class="card-title">Войти в систему</span>
+    <div class="input-field">
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        [ngClass]="{'invalid': form.get('email')?.invalid && form.get('email')?.touched}"
+      >
+      <label
+        for="email"
+        class="{{form.get('email')?.value ? 'active' : ''}}"
+      >
+        Email:
+      </label>
+      <span
+        class="helper-text red-text"
+        *ngIf="form.get('email')?.invalid && form.get('email')?.touched"
+      >
+        <span *ngIf="form.get('email')?.hasError('required')">
+          Email should not be empty
+        </span>
+        <span *ngIf="form.get('email')?.hasError('email')">
+          Email is Wrong
+        </span>
+      </span>
+    </div>
+    <div class="input-field">
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        value="test123"
+        [ngClass]="{'invalid': form.get('password')?.invalid && form.get('password')?.touched}"
+      >
+      <label
+        for="password"
+        class="{{form.get('password')?.value ? 'active' : ''}}"
+      >
+        Пароль:
+      </label>
+      <span
+        class="helper-text red-text"
+        *ngIf="form.get('password')?.invalid && form.get('password')?.touched"
+      >
+        <span
+          *ngIf="form.get('password')?.hasError('required')"
+        >
+          Password should not be empty
+        </span>
+        <span
+          *ngIf="form.get('password')?.hasError('minlength')"
+        >
+          Password Must Be
+          {{ form.get('password')?.errors?.['minlength'].requiredLength }} Characters.
+          But Get
+          {{ form.get('password')?.errors?.['minlength'].actualLength }}
+        </span>
+      </span>
+    </div>
+  </div>
+  <div class="card-action">
+    <button
+      type="submit"
+      class="modal-action btn waves-effect"
+      [disabled]="form.invalid || form.disabled"
+    >
+      Войти
+    </button>
+  </div>
+</form>

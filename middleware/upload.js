@@ -16,7 +16,14 @@ const storage = multer.diskStorage({
      **/
     filename(req, file, cb) {
         const date = moment().format('DDMMYYYY-HHmmss_SSS')
-        cb(null, `${date}-${file.originalname}`)
+
+        // If There Have Any Other . [ 'Other', '', 'Doc', '', 'jpg' ]
+        const type = file.originalname.split('.')
+
+        // If The File Name Is Write With Another Language
+        const renameFileName = `upload${moment().format('SSS')}.${type[type.length - 1]}`
+
+        cb(null, `${date}-${renameFileName}`)
     }
 })
 

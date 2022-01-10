@@ -10,7 +10,6 @@ const upload = require('../middleware/upload')
 // Get Controllers For Router
 const categoryControllers = require('../controllers/category')
 
-
 // Todo Create Routers For Category
 
 // localhost:5000/api/category

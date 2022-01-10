@@ -1,6 +1,12 @@
 const {Router} = require('express')
-const orderControllers = require('../controllers/order')
+
+// initialization Router
 const router = Router()
+
+// Get Controllers For Router
+const orderControllers = require('../controllers/order')
+
+// Todo Create Routers For Orders
 
 // localhost:5000/api/order
 router.get('/', orderControllers.getAll)
