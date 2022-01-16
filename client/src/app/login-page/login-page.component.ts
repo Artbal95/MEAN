@@ -36,10 +36,12 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     })
 
     this.route.queryParams.subscribe((params: Params) => {
-      if(params['registered']){
+      if (params['registered']) {
         MaterialService.toast('Now you can log in using your data')
-      }else if(params['accessDenied']){
+      } else if (params['accessDenied']) {
         MaterialService.toast('To get started, log in to the system')
+      } else if (params['sessionFailed']) {
+        MaterialService.toast('Please login again')
       }
     })
   }
@@ -53,13 +55,15 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     this.form.disable()
 
-    this.aSub = this.auth.login(this.form.value).subscribe(
-      () => console.log('Navigate To Overview'),
-      (error: any): void => {
+    this.aSub = this.auth.login(this.form.value).subscribe({
+      next: (): void => {
+        this.router.navigate(['/overview'])
+      },
+      error: (error: any): void => {
         MaterialService.toast(error.error.message)
         this.form.enable()
       },
-    )
+    })
   }
 
 }
