@@ -80,7 +80,6 @@ module.exports.create = async (req, res) => {
         // Get Name From Requests Body
         const {name} = req.body
 
-        console.log(req.file)
         // Get The Path To The File If It Exists
         const filePath = req.file ? req.file.path : ''
 

@@ -15,6 +15,7 @@ export class PositionsFormComponent implements OnInit, AfterViewInit, OnDestroy 
   @ViewChild('modal') modalRef!: ElementRef
 
   positions: Position[] = []
+  positionId!: string | null | undefined
   loading: boolean = false
   modal!: MaterialInstance
   form: FormGroup = new FormGroup({})
@@ -27,7 +28,7 @@ export class PositionsFormComponent implements OnInit, AfterViewInit, OnDestroy 
   ngOnInit(): void {
     this.form = new FormGroup({
       name: new FormControl(null, Validators.required),
-      cost: new FormControl(null, [Validators.required, Validators.min(1)])
+      cost: new FormControl(1, [Validators.required, Validators.min(1)])
     })
 
     this.loading = true
@@ -48,18 +49,89 @@ export class PositionsFormComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   onSelectPosition(position: Position){
+    this.positionId = position._id
+    this.form.patchValue({
+      name: position.name,
+      cost: position.cost
+    })
     this.modal.open && this.modal.open()
+    MaterialService.updateTextInputs()
   }
 
   onAddPosition(){
+    this.positionId = null
+    this.form.reset({
+      name: null,
+      cost: 1
+    })
     this.modal.open && this.modal.open()
+    MaterialService.updateTextInputs()
   }
 
   onCancel() {
     this.modal.close && this.modal.close()
   }
 
+  onDeletePosition(event: Event, position: Position){
+    event.stopPropagation()
+    const decision = window.confirm(`Are you sure you want to delete the position ${position.name}`)
+
+    if(decision){
+      this.positionsService.delete(position).subscribe({
+        next: (res) => {
+          const idx = this.positions.findIndex(p => p._id === position._id)
+          this.positions.splice(idx, 1)
+          MaterialService.toast(res.message)
+        },
+        error: error => MaterialService.toast(error.error.message)
+      })
+    }
+  }
+
   onSubmit() {
+    this.form.disable()
+
+    const newPosition: Position = {
+      name: this.form.value.name,
+      cost: this.form.value.cost,
+      category: this.categoryId
+    }
+
+    const complete = () => {
+      this.modal.close && this.modal.close()
+      this.form.reset({name: "", cost: 1})
+      this.form.enable()
+    }
+
+    if(this.positionId){
+      newPosition._id = this.positionId
+      this.positionsService.update(newPosition).subscribe({
+        next: (position: Position) => {
+          const idx = this.positions.findIndex(p => p._id === position._id)
+          this.positions[idx] = position
+          MaterialService.toast('Position Was Updated')
+          this.positions.push(position)
+        },
+        error: error => {
+          this.form.enable()
+          MaterialService.toast(error.error.message)
+        },
+        complete
+      })
+    }else{
+      this.positionsService.create(newPosition).subscribe({
+        next: (position: Position) => {
+          MaterialService.toast('Position Was Created')
+          this.positions.push(position)
+        },
+        error: error => {
+          this.form.enable()
+          MaterialService.toast(error.error.message)
+        },
+        complete
+      })
+    }
+
 
   }
 
